@@ -13,6 +13,12 @@ import ExportNovelAsEpubButton from './ExportNovelAsEpubButton';
 import { NovelInfo } from '@database/types';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { MaterialDesignIconName } from '@type/icon';
+import {
+  isStoryModelConfigured,
+  useStoryMemorySettings,
+} from '@hooks/persisted/useStoryMemorySettings';
+import { queueStoryMemoryIndexing } from '@services/storyMemory';
+import { showToast } from '@utils/showToast';
 
 const NovelAppbarAction = memo(
   ({
@@ -141,6 +147,34 @@ const NovelAppbar = ({
 
   const appbarTheme = useMemo(() => ({ colors: theme }), [theme]);
 
+  const storyMemorySettings = useStoryMemorySettings();
+  const { enabledNovelIds, setStoryMemorySettings } = storyMemorySettings;
+  const storyModelConfigured = isStoryModelConfigured(storyMemorySettings);
+  const storyMemoryOn = novel ? enabledNovelIds.includes(novel.id) : false;
+  const toggleStoryMemory = useCallback(() => {
+    if (!novel) return;
+    if (storyMemoryOn) {
+      setStoryMemorySettings({
+        enabledNovelIds: enabledNovelIds.filter(id => id !== novel.id),
+      });
+      showToast(getString('storyMemory.turnedOff'));
+      return;
+    }
+    if (!storyModelConfigured) {
+      showToast(getString('storyMemory.notConfigured'));
+      return;
+    }
+    setStoryMemorySettings({ enabledNovelIds: [...enabledNovelIds, novel.id] });
+    showToast(getString('storyMemory.turnedOn'));
+    queueStoryMemoryIndexing();
+  }, [
+    enabledNovelIds,
+    novel,
+    setStoryMemorySettings,
+    storyMemoryOn,
+    storyModelConfigured,
+  ]);
+
   const renderExportIcon = useCallback(
     (onPress: () => void) => (
       <NovelAppbarAction
@@ -215,6 +249,12 @@ const NovelAppbar = ({
         label: getString('novelScreen.edit.cover'),
         onPress: () => setCustomNovelCover(),
       },
+      {
+        label: getString(
+          storyMemoryOn ? 'storyMemory.turnOff' : 'storyMemory.turnOn',
+        ),
+        onPress: toggleStoryMemory,
+      },
     );
 
     return items;
@@ -226,6 +266,8 @@ const NovelAppbar = ({
     setCustomNovelCover,
     shareNovel,
     showEditInfoModal,
+    storyMemoryOn,
+    toggleStoryMemory,
   ]);
 
   const openDlMenu = useCallback(() => showDownloadMenu(true), []);

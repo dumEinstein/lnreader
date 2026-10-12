@@ -23,6 +23,8 @@ const mockSanitizeChapterText = jest.fn();
 const mockParseChapterNumber = jest.fn();
 
 const mockUseNovelValue = jest.fn();
+const mockIsStoryMemoryEnabled = jest.fn();
+const mockQueueStoryMemoryIndexing = jest.fn();
 
 jest.mock('@screens/novel/NovelContext', () => ({
   useNovelActions: () => mockUseNovelActions(),
@@ -64,6 +66,12 @@ jest.mock('../../utils/sanitizeChapterText', () => ({
 
 jest.mock('@utils/parseChapterNumber', () => ({
   parseChapterNumber: (...args: unknown[]) => mockParseChapterNumber(...args),
+}));
+
+jest.mock('@services/storyMemory', () => ({
+  isStoryMemoryEnabled: (...args: unknown[]) =>
+    mockIsStoryMemoryEnabled(...args),
+  queueStoryMemoryIndexing: () => mockQueueStoryMemoryIndexing(),
 }));
 
 jest.mock('expo-speech', () => ({
@@ -332,6 +340,37 @@ describe('useChapter', () => {
       initialChapter.name,
     );
     expect(updateAllTrackedNovels).toHaveBeenCalledWith({ progress: 5 });
+  });
+
+  it('queues story memory indexing once a chapter is read, only for novels that use it', async () => {
+    const store = createStore();
+    mockUseNovelActions.mockReturnValue(store.state);
+    mockIsStoryMemoryEnabled.mockReturnValue(false);
+
+    const { result } = renderHook(() => useFlatChapter(initialChapter));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    act(() => {
+      result.current.saveProgress(50);
+    });
+    expect(mockIsStoryMemoryEnabled).not.toHaveBeenCalled();
+
+    act(() => {
+      result.current.saveProgress(98);
+    });
+    expect(mockIsStoryMemoryEnabled).toHaveBeenCalledWith(novel.id);
+    expect(mockQueueStoryMemoryIndexing).not.toHaveBeenCalled();
+
+    mockIsStoryMemoryEnabled.mockReturnValue(true);
+    const { result: enabledResult } = renderHook(() =>
+      useFlatChapter(initialChapter),
+    );
+    await waitFor(() => expect(enabledResult.current.loading).toBe(false));
+    act(() => {
+      enabledResult.current.saveProgress(99);
+      enabledResult.current.saveProgress(100);
+    });
+    expect(mockQueueStoryMemoryIndexing).toHaveBeenCalledTimes(1);
   });
 
   it('sets error and drops the failed load from the cache so a retry refetches', async () => {

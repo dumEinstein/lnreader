@@ -86,6 +86,7 @@ export type SettingsStackParamList = {
   CustomCode: undefined;
   CodeSnippets: { snippetIndex: number; isJS: boolean } | undefined;
   GenreTaxonomy: undefined;
+  StoryMemorySettings: undefined;
 };
 
 export type NovelScreenProps = NativeStackScreenProps<
@@ -183,6 +184,10 @@ export type BackupSettingsScreenProps = NativeStackScreenProps<
 export type AdvancedSettingsScreenProps = NativeStackScreenProps<
   SettingsStackParamList,
   'AdvancedSettings'
+>;
+export type StoryMemorySettingsScreenProps = NativeStackScreenProps<
+  SettingsStackParamList,
+  'StoryMemorySettings'
 >;
 export type LibrarySettingsScreenProps = CompositeScreenProps<
   NativeStackScreenProps<SettingsStackParamList, 'LibrarySettings'>,

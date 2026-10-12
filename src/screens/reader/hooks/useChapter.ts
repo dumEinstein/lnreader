@@ -37,6 +37,10 @@ import NativeVolumeButtonListener from '@modules/native-volume-button-listener';
 import NativeFile from '@modules/native-file';
 import { useNovelActions, useNovelValue } from '@screens/novel/NovelContext';
 import useTimeTracking from './useTimeTracking';
+import {
+  isStoryMemoryEnabled,
+  queueStoryMemoryIndexing,
+} from '@services/storyMemory';
 import { useEventListener } from 'expo';
 
 type AdjacentChapters = [
@@ -445,6 +449,9 @@ export default function useChapter(
           markedReadRef.current = chapter.id;
           markChapterRead(chapter.id);
           updateTracker();
+          if (isStoryMemoryEnabled(novel.id)) {
+            queueStoryMemoryIndexing();
+          }
         }
       }
     },
@@ -452,6 +459,7 @@ export default function useChapter(
       chapter.id,
       incognitoMode,
       markChapterRead,
+      novel.id,
       updateChapterProgress,
       updateTracker,
     ],

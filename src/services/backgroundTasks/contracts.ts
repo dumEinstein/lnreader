@@ -79,6 +79,7 @@ export type BackgroundTask =
     }
   | { name: 'LOCAL_RESTORE'; data: { sourceUri: string } }
   | { name: 'MIGRATE_NOVEL'; data: MigrateNovelData }
+  | { name: 'INDEX_STORY_MEMORY' }
   | DownloadChapterTask;
 
 export type DownloadChapterTask = {

@@ -74,6 +74,17 @@ const SettingsScreen = ({ navigation }: SettingsScreenProps) => {
           theme={theme}
         />
         <List.Item
+          title={getString('storyMemory.title')}
+          description={getString('storyMemory.description')}
+          icon="account-details-outline"
+          onPress={() =>
+            navigation.navigate('SettingsStack', {
+              screen: 'StoryMemorySettings',
+            })
+          }
+          theme={theme}
+        />
+        <List.Item
           title={getString('tracking')}
           icon="sync"
           onPress={() =>

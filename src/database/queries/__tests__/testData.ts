@@ -25,6 +25,9 @@ export function clearAllTables(testDb: TestDb) {
   sqlite.executeSync('DELETE FROM Chapter');
   sqlite.executeSync('DELETE FROM Novel');
   sqlite.executeSync('DELETE FROM Repository');
+  sqlite.executeSync('DELETE FROM StoryCharacterNote');
+  sqlite.executeSync('DELETE FROM StoryCharacter');
+  sqlite.executeSync('DELETE FROM StoryChapter');
   sqlite.executeSync('DELETE FROM Category WHERE id > 2');
 }
 

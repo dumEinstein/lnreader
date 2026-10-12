@@ -799,6 +799,7 @@
     "LOCAL_RESTORE": "Local Restore",
     "MIGRATE_NOVEL": "Migrating Novel",
     "DOWNLOAD_CHAPTER": "Downloading Chapter",
+    "INDEX_STORY_MEMORY": "Updating story memory",
     "taskQueued": "%{task} queued",
     "taskCompleted": "Completed",
     "taskFailed": "Failed: %{error}"
@@ -907,5 +908,34 @@
     "normalizationValuePlaceholder": "e.g. Sci-Fi",
     "noCategories": "No genre groups yet",
     "noNormalization": "No normalization rules configured"
+  },
+  "storyMemory": {
+    "title": "Story memory",
+    "description": "Character and plot notes from chapters you've read",
+    "serverSection": "Model server",
+    "baseUrl": "Server address",
+    "baseUrlDescription": "OpenAI-compatible address ending in /v1, e.g. http://192.168.1.20:11434/v1 for Ollama",
+    "model": "Model",
+    "modelDescription": "Name of the model on that server",
+    "apiKey": "API key",
+    "apiKeyDescription": "Usually not needed for a server on your own network",
+    "apiKeySet": "Set",
+    "contextTokens": "Context length (tokens)",
+    "contextTokensDescription": "Match the context length your server loads the model with. Long chapters are split to fit.",
+    "notSet": "Not set",
+    "testConnection": "Test connection",
+    "connectionOk": "Connected. Models on this server: %{models}",
+    "connectionFailed": "Could not connect: %{error}",
+    "indexingSection": "Indexing",
+    "indexNow": "Update story memory now",
+    "indexNowDescription": "Novels turned on: %{count}. Chapters already read are indexed in reading order.",
+    "privacyNote": "Only chapters you have read are sent, and only to the server above.",
+    "turnOn": "Turn on story memory",
+    "turnOff": "Turn off story memory",
+    "turnedOn": "Story memory on. Indexing chapters you've read.",
+    "turnedOff": "Story memory off for this novel",
+    "notConfigured": "Set up a model server in Settings > Story memory first",
+    "modelUnreachable": "Model server not reachable, will retry later (%{error})",
+    "indexSummary": "Indexed %{indexed} chapters, %{failed} failed"
   }
 }
