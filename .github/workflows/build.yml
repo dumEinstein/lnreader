@@ -66,6 +66,9 @@ jobs:
     if: needs.check-preview.outputs.should-build == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 60
+    permissions:
+      actions: read
+      contents: write
 
     steps:
       - name: Checkout Repository
@@ -163,6 +166,25 @@ jobs:
           if-no-files-found: error
           retention-days: 14
           compression-level: 0
+
+      # Release assets can be downloaded without signing in to GitHub,
+      # unlike workflow artifacts, so the APK can be fetched straight on a phone.
+      - name: Publish Preview Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          APK_PATH: android/app/build/outputs/apk/preRelease/${{ env.PRERELEASE_APK_NAME }}
+        run: |
+          tag="preview-${GITHUB_SHA::8}"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" "$APK_PATH" --clobber
+          else
+            gh release create "$tag" "$APK_PATH" \
+              --target "$GITHUB_SHA" \
+              --prerelease \
+              --title "Preview ${PRERELEASE_VERSION_NAME} (${GITHUB_REF_NAME})" \
+              --notes "Preview build of \`${GITHUB_REF_NAME}\` at ${GITHUB_SHA::8}. Installs alongside the official LNReader."
+          fi
 
       - name: Check Discord Notification
         id: discord
